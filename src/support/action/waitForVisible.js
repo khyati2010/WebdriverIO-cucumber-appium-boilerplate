@@ -3,7 +3,7 @@
  * @param  {String}   elem      Element selector
  * @param  {String}   falseCase Whether or not to expect a visible or hidden
  *                              state
- *
+ * @param {string} time Time in ms to wait for element
  * @todo  merge with waitfor
  */
 module.exports = (elem, falseCase, time) => {
@@ -13,5 +13,5 @@ module.exports = (elem, falseCase, time) => {
      */
     const ms = (time) ? time : 10000;
 
-    browser.waitForVisible(elem, ms, !!falseCase);
+    $(elem).waitForDisplayed(ms, !!falseCase);
 };

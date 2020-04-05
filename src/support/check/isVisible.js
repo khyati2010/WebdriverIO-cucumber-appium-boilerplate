@@ -8,7 +8,7 @@ module.exports = (element, falseCase) => {
      * Visible state of the give element
      * @type {String}
      */
-    const isVisible = browser.isVisible(element);
+    const isVisible = $(element).isDisplayed();
 
     
 

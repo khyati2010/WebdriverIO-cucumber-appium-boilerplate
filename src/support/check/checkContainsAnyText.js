@@ -14,7 +14,7 @@ module.exports = (elementType, element, falseCase) => {
 
     if (
         elementType === 'button' ||
-        browser.getAttribute(element, 'value') === null
+        $(element).getAttribute('value') === null
     ) {
         command = 'getText';
     }
@@ -29,7 +29,7 @@ module.exports = (elementType, element, falseCase) => {
      * The text of the element
      * @type {String}
      */
-    const text = browser[command](element);
+    const text = $(element)[command];
 
     if (typeof falseCase === 'undefined') {
         boolFalseCase = false;

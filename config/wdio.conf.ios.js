@@ -15,9 +15,9 @@ config.port = 4723;
 config.capabilities = [
     {
         // The defaults you need to have in your config
-        deviceName: 'iPhone X',
+        deviceName: 'iPhone 11',
         platformName: 'iOS',
-        platformVersion: '12.1',
+        platformVersion: '13.2',
         browserName: 'safari',
         newCommandTimeout: 240,
         metadata: {
@@ -25,10 +25,10 @@ config.capabilities = [
                 name: 'Safari',
                 version: 'Unknown'
             },
-            device: 'iPhone X',
+            device: 'iPhone 11',
             platform: {
                 name: 'IOS',
-                version: '12.1'
+                version: '13.2'
             }
         }
     },

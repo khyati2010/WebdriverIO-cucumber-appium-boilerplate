@@ -16,10 +16,10 @@ class HomePage extends RootPage {
     category_card_ByName(categoryName) { return './/*[contains(@class,"CategoryCard__Articles")]/h2[text()[contains(.,"'+categoryName+'")]]/..'};
     categoryCardHeading(index) { return this.categoryCard(index)+'/h2'};
     category_card_feature_article(index) { return this.categoryCard(index)+'/div[contains(@class,"Featured")]'};
-    category_card_feature_article_quote(index){ return this.category_card_feature_article(index) + '/div[contains(@class,"ContentCard")]/h3'};
+    category_card_feature_article_quote(index){ return this.category_card_feature_article(index) + '//div[contains(@class,"ContentCard")]/h3'};
     category_card_feature_article_image(index){ return this.category_card_feature_article(index) + '/picture'};
-    category_card_feature_article_title(index){ return this.category_card_feature_article(index) + '/div[contains(@class,"ContentCard")]//h6'};
-    category_card_feature_article_readmore(index){ return this.category_card_feature_article(index) + '/div[contains(@class,"ContentCard")]//label'};
+    category_card_feature_article_title(index){ return this.category_card_feature_article(index) + '//div[contains(@class,"ContentCard")]//h6'};
+    category_card_feature_article_readmore(index){ return this.category_card_feature_article(index) + '//div[contains(@class,"ContentCard")]//label'};
     category_card_article_list(index) { return this.categoryCard(index)+'//div[contains(@class,"article")]'};
     
 
@@ -48,7 +48,7 @@ class HomePage extends RootPage {
     
     instagramFeed_Insta_BrandCard() {return '[class*="InstagramFeed__Row"] [class*="InstagramFeed__BrandCard"]:nth-of-type(1)'};
     instagramFeed_Insta_BrandCard_Link() {return '[class*="InstagramFeed__Row"] [class*="InstagramFeed__BrandCard"]:nth-of-type(1) a'};
-    instagramFeed_Fb_BrandCard_Link_followText() {return '[class*="InstagramFeed__Row"] [class*="InstagramFeed__BrandCard"]:nth-of-type(1) a .follow'};
+    instagramFeed_Insta_BrandCard_Link_followText() {return '[class*="InstagramFeed__Row"] [class*="InstagramFeed__BrandCard"]:nth-of-type(1) a .follow'};
 
     instagramFeed_Fb_BrandCard() {return '[class*="InstagramFeed__Row"] .fb[class*="InstagramFeed__BrandCard"]'};
     instagramFeed_Fb_BrandCard_Link() {return '[class*="InstagramFeed__Row"] .fb[class*="InstagramFeed__BrandCard"] a'};
@@ -103,7 +103,7 @@ class HomePage extends RootPage {
     }
 
     get_Facebook_Instagram_BrandCard_Link(){
-        return browser.call(() => {  return this.gqHelper.get_Facebook_Instagram_BrandCard_Link(); });
+        return this.gqHelper.get_Facebook_Instagram_BrandCard_Link(); 
     }
 
     get_InstagramLink_Contentful(){
@@ -126,7 +126,7 @@ class HomePage extends RootPage {
         let category;
         for(let article of articleList){
             let aUrl = article.getAttribute('pathname');
-            let cat = browser.call(() => { return this.gqHelper.get_category_of_article({url: aUrl});});
+            let cat =  this.gqHelper.get_category_of_article({url: aUrl});
             if(category != undefined && category != cat){ throw new Error(`found different categories in same category card: ${category} and ${cat}`)}
             category = cat;
         }

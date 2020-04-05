@@ -9,7 +9,7 @@ module.exports = (element, falseCase) => {
      * The enabled state of the given element
      * @type {Boolean}
      */
-    const isEnabled = browser.isEnabled(element);
+    const isEnabled = $(element).isEnabled();
 
     if (falseCase) {
         expect(isEnabled).to.not

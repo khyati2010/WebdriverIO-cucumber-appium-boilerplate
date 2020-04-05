@@ -2,28 +2,28 @@
  * Scroll the page to the given element
  * @param  {String}   selector Element selector
  */
-function scroll(selector ,xOffset = 0, yOffset = 0 )  {
+function scroll(selector ,xOffset = 0, yOffset = -80 )  {
     if(browser.isMobile){
-        console.log('outer', selector);
-        browser.execute(function(qselector){
-            if(qselector.startsWith('.//')){
-                $x(qselector)[0].scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center',
-                    inline: 'center'
+        // browser.execute(function(qselector){
+        //     if(qselector.includes('.//')){
+        //         $x(qselector)[0].scrollIntoView({
+        //             behavior: 'smooth',
+        //             block: 'center',
+        //             inline: 'center'
                 
-                });
-            }else{
-                document.querySelector(qselector).scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center',
-                    inline: 'center'
+        //         });
+        //     }else{
+        //         document.querySelector(qselector).scrollIntoView({
+        //             behavior: 'smooth',
+        //             block: 'center',
+        //             inline: 'center'
                 
-                });
-            }
-        },selector);
+        //         });
+        //     }
+        // },selector);
+        $(selector).scrollIntoView(xOffset, yOffset);
     }else{
-        browser.scroll(selector, xOffset, yOffset);
+        $(selector).scrollIntoView(xOffset, yOffset);
     }  
 };
 
@@ -39,7 +39,9 @@ function scrollUp(xOffset = 0, yOffset = 500)  {
             { action: 'moveTo', x: xOffset, y: (yOffset) },
             'release']);
     }else{
-        browser.scroll(xOffset, yOffset);
+        browser.execute(function(xOffset, yOffset){
+            window.scroll(xOffset, yOffset)
+        }, xOffset, (0-yOffset));
     }
 }
 
@@ -55,9 +57,21 @@ function scrollDown(xOffset = 0, yOffset = 500)  {
             { action: 'moveTo', x: xOffset, y: (0- yOffset) },
             'release']);
     }else{
-        browser.scroll(xOffset, (0-yOffset));
+        browser.execute(function(xOffset, yOffset){
+            window.scroll(xOffset, yOffset)
+        }, xOffset, yOffset);
     }
     
 }
+/**
+ * Scroll the page to the given element untill its visible
+ * @param  {String}   selector Element selector
+ */
+function scrollUntilVisible(selector, xOffset = 0, yOffset = -80){
+    browser.waitUntil(() => {
+        $(selector).scrollIntoView({behavior: 'auto',block: 'center',inline: 'start'});
+        return $(selector).isDisplayed();
+      }, 20000, `expected ${selector} to be visible after 5s`);
+}
 
-module.exports = {scroll, scrollUp, scrollDown};
+module.exports = {scroll, scrollUp, scrollDown, scrollUntilVisible};

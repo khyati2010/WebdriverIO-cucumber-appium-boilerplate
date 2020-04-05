@@ -10,7 +10,7 @@ module.exports = (element, falsCase, exactly) => {
      * The number of elements found in the DOM
      * @type {Int}
      */
-    const nrOfElements = browser.elements(element).value;
+    const nrOfElements = $$(element);
 
     if (falsCase === true) {
         expect(nrOfElements).to.have.lengthOf(

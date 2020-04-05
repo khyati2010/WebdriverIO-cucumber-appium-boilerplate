@@ -11,9 +11,9 @@ module.exports = (element, falseCase) => {
      */
     browser.waitUntil(() => {
     if (falseCase) {
-        return !browser.isVisibleWithinViewport(element);
+        return !$(element).isDisplayedInViewport();
     } else {
-        return browser.isVisibleWithinViewport(element);
+        return $(element).isDisplayedInViewport();
     }
     },5000, `Expected element "${element}" ${falseCase} to be inside the viewport`)
 };

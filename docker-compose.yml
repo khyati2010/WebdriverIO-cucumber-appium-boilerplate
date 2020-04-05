@@ -1,0 +1,27 @@
+version: '3.0'
+services:
+
+  selenium:
+    image: selenium/standalone-chrome:3.141.59-selenium
+    ports:
+      - "4444:4444"
+    shm_size: 2g
+
+  app:
+    build: .
+    depends_on:
+      - start_dependencies
+    environment:
+      - HOST=selenium
+    links:
+      - selenium
+    command: npm run test:features -- --host selenium
+    volumes:
+     - ./reports:/app/reports
+     - ./logs:/app/logs
+
+  start_dependencies:
+    image: dadarek/wait-for-dependencies
+    depends_on:
+      - selenium
+    command: selenium:4444

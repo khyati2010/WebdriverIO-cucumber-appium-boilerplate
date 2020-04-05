@@ -9,7 +9,7 @@ module.exports = (falseCase, expectedPath) => {
      * The URL of the current browser window
      * @type {String}
      */
-    let currentUrl = browser.url().value.replace(/http(s?):\/\//, '');
+    let currentUrl = browser.getUrl().replace(/http(s?):\/\//, '');
 
     /**
      * The base URL of the current browser window

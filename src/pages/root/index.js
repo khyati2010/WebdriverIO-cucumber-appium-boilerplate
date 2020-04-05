@@ -2,6 +2,7 @@ import SailthruHelper from "../../helper/sailthru.helper";
 import GraphqlHelper  from "../../helper/graphql.helper";
 import navigationModule  from "./navigation.module";
 import sailthruPopupModule  from "./sailthru_popup.module";
+import cookieConsentModule from "./cookie_consent.module";
 import searchModule  from "./search.module";
 import footerModule  from "./footer.module";
 import featuredArticleModule  from "./featured_article.module";
@@ -21,9 +22,6 @@ export default class RootPage{
     /* articles on page */
     articles_on_page(){return 'a[href^="/articles"]'};
 
-    /* advertisement */
-    advertisement(){ return '[class*="Advertisement__StickyAd"]';};
-
     constructor() {
         this.stHelper = new SailthruHelper();
         this.gqHelper = new GraphqlHelper();
@@ -42,8 +40,10 @@ export default class RootPage{
       * @returns string
       * @description fetch user from sailthru
       */
-    async verifyUserInSailthru(email){
-        let user = await this.stHelper.getUser(email);
+    verifyUserInSailthru(email){
+        let user = browser.call(()=>{
+            return this.stHelper.getUser(email);
+        })
 
         if(user != null && user.keys.email == email){
             return user.keys.email;
@@ -61,18 +61,14 @@ export default class RootPage{
        switch(pageInView){
            case 'category':
                 {
-                    let pageModules = browser.call(() => {
-                    return this.gqHelper.get_page_module_of_category_page({"name":"Body"});
-                    });
+                    let pageModules = this.gqHelper.get_page_module_of_category_page({"name":"Body"});
                     this.verify_pagemodule_content(pageModules);
                 }
            break;
            case 'article':
                 {
                     let urlOfArticle = '/' + browser.getUrl().split(browser.options.baseUrl)[1];
-                    let pageModules = browser.call(() => {
-                        return this.gqHelper.get_page_module_of_article_page(urlOfArticle);
-                    });
+                    let pageModules = this.gqHelper.get_page_module_of_article_page(urlOfArticle);
                     this.verify_pagemodule_content(pageModules);
                 }
            break;
@@ -98,12 +94,13 @@ export default class RootPage{
             }
         })
 
-        if(this.title == 'Article Page'){module_map.set("Advertisement", (module_map.get("Advertisement")) ? module_map.get("Advertisement")+1 : 1);}
+        if(this.title == 'Article Page'){module_map.set("Advertisement", (module_map.get("Advertisement")) ? module_map.get("Advertisement")+2 : 2);}
+        if(this.title == 'Category Page'){module_map.set("Advertisement", (module_map.get("Advertisement")) ? module_map.get("Advertisement")+1 : 1);}
         for(let [module, count] of module_map){
             let countMatch = (count == $$(this[module.replace(/^\w/, c => c.toLowerCase())].call()).length)
            //let isVisible = browser.isVisible(this[module.replace(/^\w/, c => c.toLowerCase())].call())
            expect(countMatch).to
-            .equal(true, `Expected element "${module}" to be matched with contentful`);
+            .equal(true, `${count}:: ${module}  Expected element "${module}" to be matched with contentful`);
         }
     }
 
@@ -114,9 +111,7 @@ export default class RootPage{
     */
     get_category_of_any_article_on_page(){
         let aUrl = $$(this.articles_on_page())[3].getAttribute('pathname');
-        let cat = browser.call(() => {
-             return  this.gqHelper.get_category_of_article({url: aUrl});
-        });
+        let cat = this.gqHelper.get_category_of_article({url: aUrl});
         return cat;
     }
 
@@ -127,9 +122,7 @@ export default class RootPage{
     */
     get_tags_of_any_article_on_page(){
         let aUrl = $$(this.articles_on_page())[3].getAttribute('pathname');
-        let tags = browser.call(() => {  
-            return this.gqHelper.get_tags_of_article({url: aUrl}); 
-        });
+        let tags = this.gqHelper.get_tags_of_article({url: aUrl}); 
         return tags;
     }
 }
@@ -143,4 +136,5 @@ Object.assign(RootPage.prototype,
     seariesCardModule,
     articleListModule,
     commonModule,
-    sailthruPopupModule);
+    sailthruPopupModule,
+    cookieConsentModule);

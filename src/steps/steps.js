@@ -21,6 +21,7 @@ import openWebsite from '../support/action/openWebsite';
 import resizeScreenSize from '../support/action/resizeScreenSize';
 import clearInputField from '../support/action/clearInputField';
 import clickElement from '../support/action/clickElement';
+//import clickElementWithJS from '../support/action/clickElementWithJS';
 import closeLastOpenedWindow from '../support/action/closeLastOpenedWindow';
 import deleteCookie from '../support/action/deleteCookie';
 import dragElement from '../support/action/dragElement';
@@ -29,7 +30,7 @@ import handleModal from '../support/action/handleModal';
 import moveToElement from '../support/action/moveToElement';
 import pause from '../support/action/pause';
 import pressButton from '../support/action/pressButton';
-import {scroll, scrollUp, scrollDown} from '../support/action/scroll';
+import {scroll, scrollUp, scrollDown, scrollUntilVisible} from '../support/action/scroll';
 import selectOption from '../support/action/selectOption';
 import selectOptionByIndex from '../support/action/selectOptionByIndex';
 import setCookie from '../support/action/setCookie';
@@ -59,7 +60,7 @@ import { wait, waitForURL, waitForURLPath, checkPositionInModule, checkItemInLis
 /** pages*/
 import pages from '../pages/pageList';
 
-const { Given,  Then, When, steps } = require('cucumber');
+const { Given,  Then, When } = require('cucumber');
 
 var pageInView = 'homePage';
 
@@ -178,7 +179,7 @@ Given(
 );
 
 Given(
-    /^the element "([^"]*)?" is( not)* ([\d]+)px (broad|tall)$/,
+    /^the element "([^"]*)?"( not)* have ([\d]+)px (width|height)$/,
     checkDimension
 );
 
@@ -220,8 +221,8 @@ When(
 
 When(
     /^I "([^"]*)?" on current page$/,
-    (async (command) => {
-        await getElement(command);
+    ((command) => {
+        getElement(command);
     })
 );
 
@@ -238,7 +239,7 @@ When(
     ((category) => {
         pages[pageInView].navigateToCategoty(category);
         pageInView = 'category';
-        waitForURLPath('category/'+category);
+        waitForURLPath('endswith', 'category/'+category);
     })
 );
 
@@ -251,8 +252,8 @@ When(
 
 When(
     /^I wait for url is( not)* "([^"]*)?"$/,
-    (async (falseCase, path) => {
-        waitForURL(falseCase, await getElement(path));
+    ((falseCase, path) => {
+        waitForURL(falseCase, getElement(path));
     })
 );
 
@@ -316,8 +317,13 @@ When(
 );
 
 When(
-    /^I scroll to element "([^"]*)?"$/,
-    ((selector) => {scroll(getElement(selector))})
+    /^I scroll to element "([^"]*)?"(?: with an offset of ([-+]?\d+),([-+]?\d+))*$/,
+    ((selector, x, y) => {scroll(getElement(selector, x, y))})
+);
+
+When(
+    /^I scroll to element "([^"]*)?" until its visible$/,
+    ((selector) => {scrollUntilVisible(getElement(selector))})
 );
 
 When(
@@ -356,7 +362,7 @@ When(
 );
 
 When(
-    /^I move to element "([^"]*)?"(?: with an offset of (\d+),(\d+))*$/,
+    /^I move to element "([^"]*)?"(?: with an offset of ([-+]?\d+),([-+]?\d+))*$/,
     ((element, x, y) => {
         moveToElement(getElement(element), x, y);
     })
@@ -470,15 +476,15 @@ Then(
 
 Then(
     /^I expect that "([^"]*)?" is( not)* equal to "([^"]*)?"$/,
-    (async (actual, falseCase, expected) => {
-        checkEquals( await getElement(actual), falseCase, expected);
+    ((actual, falseCase, expected) => {
+        checkEquals( getElement(actual), falseCase, expected);
     })
 );
 
 Then(
     /^I expect that "([^"]*)?" is( not)* equal to (\d+)$/,
-    (async (actual, falseCase, expected) => {
-        checkEquals( await getElement(actual), falseCase, expected);
+    ((actual, falseCase, expected) => {
+        checkEquals( getElement(actual), falseCase, expected);
     })
 );
 
@@ -503,8 +509,8 @@ Then(
 
 Then(
     /^I expect that the url is( not)* "([^"]*)?"$/,
-    (async (falseCase, expectedUrl)=>{
-        checkUrl(falseCase, await getElement(expectedUrl));
+    ((falseCase, expectedUrl)=>{
+        checkUrl(falseCase, getElement(expectedUrl));
     })
 );
 
@@ -558,7 +564,7 @@ Then(
 );
 
 Then(
-    /^I expect that element "([^"]*)?" is( not)* ([\d]+)px (broad|tall)$/,
+    /^I expect that element "([^"]*)?"( not)* have ([\d]+)px (width|height)$/,
     checkDimension
 );
 
@@ -610,8 +616,8 @@ Then(
 );
 
 Then(/^I expect that all content of page module in contentful are visible$/,
-    (async() => {
-        await pages[pageInView]['verify_pagemodule_content_from_contentful'](pageInView)
+    (() => {
+        pages[pageInView]['verify_pagemodule_content_from_contentful'](pageInView)
     })
 );
 

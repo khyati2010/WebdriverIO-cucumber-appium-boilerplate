@@ -15,7 +15,7 @@ module.exports = (elementType, element, falseCase, expectedText) => {
 
     if (
         elementType === 'button' ||
-        browser.getAttribute(element, 'value') === null
+        $(element).getAttribute('value') === null
     ) {
         command = 'getAttribute';
     }
@@ -44,7 +44,7 @@ module.exports = (elementType, element, falseCase, expectedText) => {
         boolFalseCase = true;
     }
 
-    const text = browser[command](element,'innerText');
+    const text = $(element)[command]('innerText');
 
     if (boolFalseCase) {
         parsedExpectedText.should.not.equal(text);

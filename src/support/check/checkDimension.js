@@ -11,7 +11,7 @@ module.exports = (elem, falseCase, expectedSize, dimension) => {
      * The size of the given element
      * @type {Object}
      */
-    const elementSize = browser.getElementSize(elem);
+    const elementSize = $(elem).getSize(dimension);
 
     /**
      * Parsed size to check for
@@ -19,36 +19,19 @@ module.exports = (elem, falseCase, expectedSize, dimension) => {
      */
     const intExpectedSize = parseInt(expectedSize, 10);
 
-    /**
-     * The size property to check against
-     * @type {Int}
-     */
-    let originalSize = elementSize.height;
-
-    /**
-     * The label of the checked property
-     * @type {String}
-     */
-    let label = 'height';
-
-    if (dimension === 'broad') {
-        originalSize = elementSize.width;
-        label = 'width';
-    }
-
     if (falseCase) {
-        expect(originalSize).to.not
+        expect(elementSize).to.not
             .equal(
                 intExpectedSize,
-                `Element "${elem}" should not have a ${label} of ` +
+                `Element "${elem}" should not have a ${dimension} of ` +
                 `${intExpectedSize}px`
             );
     } else {
-        expect(originalSize).to
+        expect(elementSize).to
             .equal(
                 intExpectedSize,
-                `Element "${elem}" should have a ${label} of ` +
-                `${intExpectedSize}px, but is ${originalSize}px`
+                `Element "${elem}" should have a ${dimension} of ` +
+                `${intExpectedSize}px, but is ${elementSize}px`
             );
     }
 };

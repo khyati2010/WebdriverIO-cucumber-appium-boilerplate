@@ -1,6 +1,4 @@
 const { Before, BeforeAll, After } = require('cucumber');
-import multipleCucumberHtmlReporter from 'wdio-multiple-cucumber-html-reporter';
-
 import GraphqlHelper from '../helper/graphql.helper'
 
 let tagsToRun = [];
@@ -9,16 +7,19 @@ let checkTagsToRun = false;
 
 
 BeforeAll(function() {
-    console.log('running before all')
+    console.log('Test execution started......', new Date());
+    //browser.fullscreenWindow();
 })
 
-Before(async function(scenario){
+Before(function(scenario){
     
     let feature = scenario.sourceLocation.uri.split('features/')[1];
     if(currentFeature != feature){
+        browser.config['CHECK_SAIL_THRU_POPUP'] = true;
+        browser.config['COOKIE_CONSENT'] = true;
         currentFeature = feature;
         if(currentFeature == 'home.feature'){
-            tagsToRun = await new GraphqlHelper().getHomepagePageModules();
+            tagsToRun = new GraphqlHelper().getHomepagePageModules();
             checkTagsToRun = true;
         }else{
             checkTagsToRun = false;
@@ -36,6 +37,7 @@ Before(async function(scenario){
 
 After(function(scenario){
     if(scenario.result.status == 'failed'){
-        multipleCucumberHtmlReporter.attach(browser.saveScreenshot('reports/errorShots/assertionError_' + new Date() + '.png'), 'image/png');
+        // // Attach a screenshot if scenario failed
+        // cucumberJson.attach(browser.saveScreenshot(`${browser.config['screenshotPath']}/${scenario.pickle.name}` + new Date().getTime() + '.png'), 'image/png');
     }
 })

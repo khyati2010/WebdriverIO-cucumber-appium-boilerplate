@@ -1,5 +1,4 @@
 import checkIfElementExists from '../lib/checkIfElementExists';
-import clickElementWithJS from './clickElementWithJS'
 
 /**
  * Perform an click action on the given element
@@ -22,13 +21,14 @@ module.exports = (action, type, element) => {
 
     checkIfElementExists(elem);
 
-    try {
-       $(elem)[method]();
-    } catch (error) {
-        console.log('an error occurred: ', error.message);
-        console.log('trying with javascript click');
-        clickElementWithJS(action, type, element);
+        browser.execute(function(qselector,method){
+            let ele;
+            if(qselector.includes('.//')){
+                ele = document.evaluate(qselector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            }else{
+                ele = document.querySelector(qselector);
+            }
+            if(method == 'click'){ele.click();}else{ele.dispatchEvent(new Event('dblclick'));}
+        }, elem, method)
         
-    }
-    
 };

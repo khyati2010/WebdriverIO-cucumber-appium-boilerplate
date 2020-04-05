@@ -1,5 +1,4 @@
-import isExisting from '../../support/check/isExisting';
-import waitForVisible from '../../support/action/waitForVisible';
+import clickElementWithJS from '../../support/action/clickElementWithJS';
 module.exports = {
     //sailthru popup
     sailthru_overlay: function(){return '.sailthru-overlay'; },
@@ -10,12 +9,18 @@ module.exports = {
     sailthru_overlay_submit: function() { return this.sailthru_overlay()+ ' .sailthru-overlay-call-to-action'; },
 
     close_sailthru_overlay: function(){
-        try{
-            waitForVisible(this.sailthru_overlay(), false, 2000);
-            $(this.sailthru_overlay_close_button()).click();
-        }catch(err){
-            console.log('sailthru popup is not shown..');
+       
+        if(browser.config['CHECK_SAIL_THRU_POPUP']){
+            try{
+                $(this.sailthru_overlay()).waitForExist(2000, false, "sailthru pop is not visiblke");
+                $(this.sailthru_overlay_close_button()).waitForClickable({ timeout: 3000, });
+                clickElementWithJS('click', 'button', this.sailthru_overlay_close_button());
+                browser.config['CHECK_SAIL_THRU_POPUP'] = false; 
+            }catch(e){
+                console.log(e);
+            }    
+        }else{
+                console.log('sailthru popup is not visible...')
+            } 
         }
-        
-    }
 }

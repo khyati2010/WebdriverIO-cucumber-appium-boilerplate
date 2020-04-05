@@ -44,7 +44,6 @@ module.exports = {
      checkSuggestedArticleInNavigation: function (){
          this.openNavigation();
          $$(this.navigationSuggestedArticleList).each((element) => {
-             console.log(element);
          })
          return true;
      }

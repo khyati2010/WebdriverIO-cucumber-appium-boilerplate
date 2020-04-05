@@ -1,3 +1,36 @@
+// const SlackReporter = require('./../src/services/wdio-slack-reporter')
+// const SlackService = require('./../src/services/wdio-slack-service');
+
+/* Env variable passed from CLI */
+//Suite execution start time
+// const currentDate = process.env.TEST_START_TIME;
+// //cucumber tags that need to be run
+// const tag = process.env.TEST_TAG;
+// //Test environment
+// const testEnv = process.env.TEST_ENV;
+//report portal config
+// const reportportal = require('wdio-reportportal-reporter');
+// const RpService = require("wdio-reportportal-service");
+// const conf = {
+//   reportPortalClientConfig: {
+//     token: '',
+//     endpoint: '',
+//     launch: `${tag.replace(/[@|\s]/g,'_')}_${testEnv.slice(0, -1)}_${currentDate}`,
+//     project: '',
+//     mode: 'DEFAULT',
+//     debug: false,
+//     description: ``,
+//     tags: [...tag.split(' '), testEnv.slice(0, -1)],
+//   },
+//   reportSeleniumCommands: false,
+//   autoAttachScreenshots: false,
+//   seleniumCommandsLogLevel: 'debug',
+//   screenshotsLogLevel: 'info',
+//   parseTagsFromTestTitle: false,
+// };
+
+
+
 exports.config = {
     //
     // ====================
@@ -17,11 +50,12 @@ exports.config = {
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
     specs: [
-        './src/spec/contributor.test.spec.js'
+        './src/features/*.feature'
     ],
     // Patterns to exclude.
     exclude: [
         // 'path/to/excluded/files'
+        './src/features/login.feature'
     ],
     //
     // ============
@@ -45,18 +79,24 @@ exports.config = {
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://docs.saucelabs.com/reference/platforms-configurator
     //
+    hostname: 'localhost',
+    port: 4444,
+    //path: '/',
     capabilities: [{
-        // maxInstances can get overwritten per capability. So if you have an in-house Selenium
-        // grid with only 5 firefox instances available you can make sure that not more than
-        // 5 instances get started at a time.
-        maxInstances: 5,
+        // maxInstances can get overwritten per capability. So if you have an
+        // in-house Selenium grid with only 5 firefox instance available you can
+        // make sure that not more than 5 instance gets started at a time.
+        maxInstances: 3,
         //
         browserName: 'chrome',
-        // If outputDir is provided WebdriverIO can capture driver session logs
-        // it is possible to configure which logTypes to include/exclude.
-        // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
-        // excludeDriverLogs: ['bugreport', 'server'],
-    }],
+        pageLoadStrategy: 'normal'
+    },
+    // {
+    //     maxInstances: 3,
+    //     //
+    //     browserName: 'firefox'
+    // }
+],
     //
     // ===================
     // Test Configurations
@@ -64,8 +104,15 @@ exports.config = {
     // Define all options that are relevant for the WebdriverIO instance here
     //
     // Level of logging verbosity: trace | debug | info | warn | error | silent
-    logLevel: 'info',
+    logLevel: 'debug',
     //
+    //output directory for selenium and wdio logs
+    //outputDir:`logs/${currentDate}`,
+    //
+    //path to save snap after error
+    //screenshotPath: `reports/${this.currentDate}/json`,
+    //
+    coloredLogs: true,
     // Set specific log levels per logger
     // loggers:
     // - webdriver, webdriverio
@@ -88,10 +135,19 @@ exports.config = {
     // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
     // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
     // gets prepended directly.
-    baseUrl: 'https://furthermore.equinox.com/',
+    baseUrl: `https://furthermore.equinox.com/`,
+    //
+    //graphql api url 
+    // graphql_API_URL: ``,
+    //
+    //sail thru keys
+    
     //
     // Default timeout for all waitFor* commands.
-    waitforTimeout: 1200000,
+    waitforTimeout: 10000,
+    //
+    //Default interval for all waitForXXX commands
+    waitforInterval: 250,
     //
     // Default timeout in milliseconds for request
     // if Selenium Grid doesn't send response
@@ -104,15 +160,30 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['selenium-standalone'],
-    
+    services:   [
+                    'selenium-standalone',
+                //    [SlackService,
+                //     {
+                //         slack_url:'',
+                //         environment: `https://furthermore.equinox.com`,
+                //         tag: tag.replace(/[@|\s]/g,' '),
+                //         //channel:'GNA2W8ZLH', //local: GNA2W8ZLH , furthermore: G0C5880DR
+
+                //     }],
+                //    [RpService, {}]
+                ], 
+    seleniumLogs: `logs/`,
+    //Arguments passed down to selenium.start()
+    seleniumArgs: {
+        seleniumArgs: [ '-port', '4444']
+    },
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
     // see also: https://webdriver.io/docs/frameworks.html
     //
     // Make sure you have the wdio adapter package for the specific framework installed
     // before running any tests.
-    framework: 'jasmine',
+    framework: 'cucumber',
     //
     // The number of times to retry the entire specfile when it fails as a whole
     // specFileRetries: 1,
@@ -120,21 +191,38 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter.html
-    reporters: ['spec'],
-    
+    reporters: [
+        //'dot',
+        'spec',
+        // ['cucumberjs-json',{
+        //     jsonFolder:`reports/${currentDate}/json/`
+        // }],
+        // [reportportal, conf],
+        // [SlackReporter,{}], 
+    ],
+    // ['allure', {
+    //     outputDir: `./reports/allure-results/${new Date()}`,
+    //     disableWebdriverStepsReporting: true,
+    //     disableWebdriverScreenshotsReporting: true,
+    // }]],
     //
-    // Options to be passed to Jasmine.
-    jasmineNodeOpts: {
-        //
-        // Jasmine default timeout
-        defaultTimeoutInterval: 1200000,
-        //
-        // The Jasmine framework allows interception of each assertion in order to log the state of the application
-        // or website depending on the result. For example, it is pretty handy to take a screenshot every time
-        // an assertion fails.
-        expectationResultHandler: function(passed, assertion) {
-            // do something
-        }
+    // If you are using Cucumber you need to specify the location of your step definitions.
+    cucumberOpts: {
+        require: ['./src/steps/steps.js'],        // <string[]> (file/dir) require files before executing features
+        backtrace: false,   // <boolean> show full backtrace for errors
+        requireModule: [['@babel/register', { ignore: ['node_modules'] }]],  // <string[]> ("extension:module") require files with the given EXTENSION after requiring MODULE (repeatable)
+        failAmbiguousDefinitions: true,
+        dryRun: false,      // <boolean> invoke formatters without executing steps
+        failFast: false,    // <boolean> abort the run on first failure
+        format: ['pretty'], // <string[]> (type[:path]) specify the output format, optionally supply PATH to redirect formatter output (repeatable)
+        colors: true,       // <boolean> disable colors in formatter output
+        snippets: true,     // <boolean> hide step definition snippets for pending steps
+        source: true,       // <boolean> hide source uris
+        profile: [],        // <string[]> (name) specify the profile to use
+        strict: false,      // <boolean> fail if there are any undefined or pending steps
+        tagExpression: 'not @pending',           // <string[]> (expression) only execute the features or scenarios with tags matching the expression
+        timeout: 60000,     // <number> timeout for step definitions
+        ignoreUndefinedDefinitions: false, // <boolean> Enable this config to treat undefined definitions as warnings.
     },
     
     //
@@ -167,8 +255,19 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {Array.<String>} specs List of spec file paths that are to be run
      */
-    // before: function (capabilities, specs) {
-    // },
+    before: function (capabilities, specs) {
+        /**
+         * Setup the Chai assertion framework
+         */
+        const chai = require('chai');
+
+        global.expect = chai.expect;
+        global.assert = chai.assert;
+        global.should = chai.should();
+        // browser.timeouts("script", 120000);
+        // browser.timeouts("page load", 120000);
+        // browser.timeouts("implicit", 10000);
+    },
     /**
      * Runs before a WebdriverIO command gets executed.
      * @param {String} commandName hook command name
@@ -177,41 +276,50 @@ exports.config = {
     // beforeCommand: function (commandName, args) {
     // },
     /**
-     * Hook that gets executed before the suite starts
-     * @param {Object} suite suite details
+     * Runs before a Cucumber feature
+     * @param {Object} feature feature details
      */
-    // beforeSuite: function (suite) {
+    // beforeFeature: function (uri, feature) {
     // },
     /**
-     * Function to be executed before a test (in Mocha/Jasmine) or a step (in Cucumber) starts.
-     * @param {Object} test test details
+     * Runs before a Cucumber scenario
+     * @param {Object} scenario scenario details
      */
-    // beforeTest: function (test) {
+    // beforeScenario: function (uri, feature, scenario) {
     // },
     /**
-     * Hook that gets executed _before_ a hook within the suite starts (e.g. runs before calling
-     * beforeEach in Mocha)
+     * Runs before a Cucumber step
+     * @param {Object} step step details
      */
-    // beforeHook: function () {
+    // beforeStep: function (uri, feature, scenario, step) {
     // },
     /**
-     * Hook that gets executed _after_ a hook within the suite starts (e.g. runs after calling
-     * afterEach in Mocha)
+     * Runs after a Cucumber step
+     * @param {Object} stepResult step result
      */
-    // afterHook: function () {
+    afterStep: function (uri, feature, scenario, step, result) {
+    //     if (result.status === 'failed') {
+    //        let failureObject = {};
+    //        failureObject.type = 'afterStep';
+    //        failureObject.title = step.keyword + step.text;
+    //        const screenShot = global.browser.takeScreenshot();
+    //        let attachment = Buffer.from(screenShot, 'base64');
+    //        reportportal.sendFileToTest(failureObject, 'error', "screnshot.png", attachment);
+    //    }
+     },
+    /**
+     * Runs after a Cucumber scenario
+     * @param {Object} scenario scenario details
+     */
+    // afterScenario: function (uri, feature, scenario, result) {
     // },
     /**
-     * Function to be executed after a test (in Mocha/Jasmine) or a step (in Cucumber) starts.
-     * @param {Object} test test details
+     * Runs after a Cucumber feature
+     * @param {Object} feature feature details
      */
-    // afterTest: function (test) {
+    // afterFeature: function (uri, feature) {
     // },
-    /**
-     * Hook that gets executed after the suite has ended
-     * @param {Object} suite suite details
-     */
-    // afterSuite: function (suite) {
-    // },
+    
     /**
      * Runs after a WebdriverIO command gets executed
      * @param {String} commandName hook command name
@@ -246,8 +354,20 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {<Object>} results object containing test results
      */
-    // onComplete: function(exitCode, config, capabilities, results) {
-    // },
+    /**
+   * Gets executed after all workers got shut down and the process is about to exit.
+   */
+    onComplete: () => {
+        // Generate the report when it all tests are done
+        // generate({
+        // // Required
+        // // This part needs to be the same path where you store the JSON files
+        // // default = '.tmp/json/'
+        // jsonDir: `reports/${currentDate}/json/`,
+        // reportPath: `reports/${currentDate}/html/`,
+        // // for more options see https://github.com/wswebcreation/multiple-cucumber-html-reporter#options
+        // });
+    },
     /**
     * Gets executed when a refresh happens.
     * @param {String} oldSessionId session ID of the old session

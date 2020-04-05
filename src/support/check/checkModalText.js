@@ -11,7 +11,7 @@ module.exports = (modalType, falseState, expectedText) => {
          * The text of the current modal
          * @type {String}
          */
-        const text = browser.alertText();
+        const text = browser.getAlertText();
 
         if (falseState) {
             expect(text).to.not.equal(

@@ -36,12 +36,12 @@ function checkPositionInModule(innerModule, position, outerModule){
     if(outerModule == 'site' || outerModule == 'page' ){
         outerModuleCord = { x: 0, y: 0 }
     }else{
-        outerModuleCord = browser.getLocation(outerModule);
-        outerModuleSize = browser.getElementSize(outerModule);
+        outerModuleCord = $(outerModule).getLocation();
+        outerModuleSize = $(outerModule).getSize();
     }
 
-    innerModuleCord = browser.getLocation(innerModule);
-    innerModuleSize = browser.getElementSize(innerModule);
+    innerModuleCord = $(innerModule).getLocation();
+    innerModuleSize = $(innerModule).getSize();;
     
     switch (position){
         case 'top':

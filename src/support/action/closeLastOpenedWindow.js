@@ -9,9 +9,9 @@ module.exports = (obsolete) => {
      * The last opened window handle
      * @type {Object}
      */
-    const lastWindowHandle = browser.windowHandles().value.slice(-1)[0];
+    const lastWindowHandle = browser.getWindowHandles().slice(-1)[0];
 
-    browser.window(lastWindowHandle);
+    browser.switchToWindow(lastWindowHandle);
 
-    browser.close();
+    browser.closeWindow();
 };

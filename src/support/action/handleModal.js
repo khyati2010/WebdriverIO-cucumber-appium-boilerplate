@@ -8,14 +8,7 @@ module.exports = (action, modalType) => {
      * The command to perform on the browser object
      * @type {String}
      */
-    let command = `alert${action.slice(0, 1).toUpperCase()}${action.slice(1)}`;
-
-    /**
-     * Alert boxes can't be dismissed, this causes Chrome to crash during tests
-     */
-    if (modalType === 'alertbox') {
-        command = 'alertAccept';
-    }
+    let command = `${action}Alert`;
 
     browser[command]();
 };

@@ -53,5 +53,5 @@ module.exports =
         boolFalseState = false;
     }
 
-    browser[command](elem, intMs, boolFalseState);
+    $(elem)[command](intMs, boolFalseState);
 };
